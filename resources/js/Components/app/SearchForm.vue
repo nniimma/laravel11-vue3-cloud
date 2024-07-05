@@ -1,5 +1,5 @@
 <template>
-<div>navigation</div>
+<div>search</div>
 </template>
 
 <script setup>
@@ -16,8 +16,10 @@
     // Methods
 
     // Hooks
+
+    
 </script>
 
 <style scoped>
-
+    
 </style>
