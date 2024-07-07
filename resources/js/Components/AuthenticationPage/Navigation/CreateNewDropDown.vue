@@ -26,20 +26,26 @@
             </MenuItems>
         </transition>
     </Menu>
+
+    <create-folder-modal v-model="createFolderModal"/>
 </template>
 
 <script setup>
     // Imports
+    import CreateFolderModal from '@/Components/AuthenticationPage/Navigation/CreateNewDropDown/CreateFolderModal.vue'
     import {
         Menu,
         MenuButton,
         MenuItems,
         MenuItem
     } from '@headlessui/vue'
-    import {} from '@heroicons/vue/20/solid';
+    import { ref } from 'vue'
+    // import {} from '@heroicons/vue/20/solid';
+
     // Uses
 
     // Refs
+    const createFolderModal = ref(false)
 
     // Props & Emits
 
@@ -47,7 +53,7 @@
 
     // Methods
     function showCreateFolderModal(){
-        console.log('hi');
+        createFolderModal.value = true
     }
 
     // Hooks
