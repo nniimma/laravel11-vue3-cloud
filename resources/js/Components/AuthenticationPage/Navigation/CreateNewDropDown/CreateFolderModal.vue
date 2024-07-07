@@ -33,7 +33,7 @@
     import SecondaryButton from "@/Components/SecondaryButton.vue";
     import PrimaryButton from "@/Components/PrimaryButton.vue";
     import {
-        useForm
+        useForm, usePage
     } from "@inertiajs/vue3";
     import {
       nextTick,
@@ -42,8 +42,11 @@
 
     // Uses
     const form = useForm({
-        name: ''
+        name: '',
+        parent_id: null
     })
+
+    const page = usePage()
 
     // Refs
     const folderNameInput = ref(null)
@@ -66,6 +69,7 @@
     }
 
     function createFolder() {
+        form.parent_id = page.props.folder.id
         form.post(route('files.store'), {
             preserveScroll: true,
             onSuccess: () => {
