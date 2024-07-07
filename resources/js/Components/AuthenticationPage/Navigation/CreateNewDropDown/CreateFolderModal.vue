@@ -70,7 +70,7 @@
 
     function createFolder() {
         form.parent_id = page.props.folder.id
-        form.post(route('files.store'), {
+        form.post(route('folders.store'), {
             preserveScroll: true,
             onSuccess: () => {
                 closeModal()

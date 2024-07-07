@@ -35,7 +35,7 @@ class FileController extends Controller
         return Inertia::render('Files/Index', compact('files', 'folder', 'ancestors'));
     }
 
-    public function store(StoreFolderRequest $request)
+    public function folderStore(StoreFolderRequest $request)
     {
         $data = $request->validated();
         $parent = $request->parent;
