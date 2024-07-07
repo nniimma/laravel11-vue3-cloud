@@ -68,7 +68,7 @@
     } = defineProps({
         files: Object,
         folder: Object,
-        ancestors: Array
+        ancestors: Object
     })
     // Computed
     // Methods
