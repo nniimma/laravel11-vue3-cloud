@@ -22,7 +22,7 @@
     import { Link } from '@inertiajs/vue3';
     import ApplicationLogo from '@/Components/ApplicationLogo.vue';
     import NavLink from '@/Components/NavLink.vue';
-    import CreateNewDropDown from '@/Components/NavigationComponent/CreateNewDropDown.vue';
+    import CreateNewDropDown from '@/Components/AuthenticationPage/Navigation/CreateNewDropDown.vue';
 
     // Uses
 

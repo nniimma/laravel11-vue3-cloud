@@ -12,7 +12,7 @@
                 class="w-full absolute left-0 mt-2 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                 <div class="px-1 py-1">
                     <MenuItem v-slot="{ active }">
-                    <a href="#" class="text-gray-700 block px-4 py-2 text-sm">New Folder</a>
+                    <a href="#" @click.prevent="showCreateFolderModal" class="text-gray-700 block px-4 py-2 text-sm">New Folder</a>
                     </MenuItem>
                 </div>
                 <div class="px-1 py-1">
@@ -46,6 +46,9 @@
     // Computed
 
     // Methods
+    function showCreateFolderModal(){
+        console.log('hi');
+    }
 
     // Hooks
 </script>
