@@ -25,9 +25,8 @@ class FileController extends Controller
             ->orderBy('is_folder', 'desc')
             ->orderBy('created_at', 'desc')
             ->paginate(10);
-        // using resource to update the data
+
         $files = FileResource::collection($files);
-        // using resource to update the data
 
         return Inertia::render('Files/Index', compact('files', 'folder'));
     }

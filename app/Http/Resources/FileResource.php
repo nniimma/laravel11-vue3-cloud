@@ -14,7 +14,6 @@ class FileResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        // using resource to update the data
         return [
             "id" => $this->id,
             "name" => $this->name,
@@ -31,6 +30,5 @@ class FileResource extends JsonResource
             "updated_by" => $this->updated_by,
             "deleted_at" => $this->deleted_at,
         ];
-        // using resource to update the data
     }
 }
