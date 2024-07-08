@@ -29,6 +29,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/files/{folder?}', [FileController::class, 'index'])
         ->where('folder', '(.*)')->name('files.index');
     Route::post('/folders', [FileController::class, 'folderStore'])->name('folders.store');
+    Route::post('/files', [FileController::class, 'fileStore'])->name('files.store');
 });
 
 require __DIR__ . '/auth.php';
