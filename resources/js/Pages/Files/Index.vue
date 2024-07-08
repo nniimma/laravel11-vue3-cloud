@@ -33,7 +33,10 @@
                 <tr v-for="file of files.data" :key="file.id"
                     class="bg-white border-b transition duration-300 ease-in-out hover:bg-gray-100 cursor-default"
                     @dblclick="openFolder(file)">
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ file . name }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 flex gap-2">
+                        <file-icon :file="file"/>
+                        {{ file . name }}
+                    </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ file . owner }}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ file . updated_at }}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ file . size }}</td>
@@ -59,6 +62,7 @@
         HomeIcon,
         ChevronRightIcon  
     } from '@heroicons/vue/20/solid';
+    import FileIcon from '@/Components/Files/FileIcon.vue';
 
     // Uses
     // Refs
