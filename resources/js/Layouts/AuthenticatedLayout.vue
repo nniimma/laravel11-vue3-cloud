@@ -41,6 +41,7 @@
     const page = usePage()
     const fileUploadForm = useForm({
         files: [],
+        relative_paths: [],
         parent_id: null
     })
 
@@ -74,6 +75,7 @@
     function uploadFiles(files) {
         fileUploadForm.parent_id = page.props.folder.id
         fileUploadForm.files = files
+        fileUploadForm.relative_paths = [...files].map(f => f.webkitRelativePath)
 
         fileUploadForm.post(route('files.store'))
     }
