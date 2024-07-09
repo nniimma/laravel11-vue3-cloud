@@ -18,6 +18,7 @@
             </template>
         </main>
     </div>
+    <form-progress :form="fileUploadForm"/>
 </template>
 
 <script setup>
@@ -25,6 +26,7 @@
     import navigation from '@/Components/AuthenticationPage/Navigation.vue'
     import SearchForm from '@/Components/AuthenticationPage/SearchForm.vue'
     import UserSettingsDropDown from '@/Components/AuthenticationPage/UserSettingsDropDown.vue'
+    import FormProgress from '@/Components/AuthenticationPage/FormProgress.vue'
     import {
         emitter,
         FILE_UPLOAD_STARTED
@@ -37,6 +39,7 @@
         onMounted,
         ref
     } from 'vue'
+
     // Uses
     const page = usePage()
     const fileUploadForm = useForm({
