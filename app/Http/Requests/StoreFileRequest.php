@@ -3,10 +3,12 @@
 namespace App\Http\Requests;
 
 use App\Models\File;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 
 class StoreFileRequest extends ParentIdBaseRequest
 {
+
     protected function prepareForValidation()
     {
         $paths = array_filter($this->relative_paths ?? [], fn ($f) => $f != null);
@@ -25,10 +27,11 @@ class StoreFileRequest extends ParentIdBaseRequest
             'file_tree' => $this->buildFileTree($this->file_paths, $data['files'])
         ]);
     }
+
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array|string>
      */
     public function rules(): array
     {
@@ -39,8 +42,7 @@ class StoreFileRequest extends ParentIdBaseRequest
                 function ($attribute, $value, $fail) {
                     if (!$this->folder_name) {
                         /** @var $value \Illuminate\Http\UploadedFile */
-                        $file = File::query()
-                            ->where('name', $value->getClientOriginalName())
+                        $file = File::query()->where('name', $value->getClientOriginalName())
                             ->where('created_by', Auth::id())
                             ->where('parent_id', $this->parent_id)
                             ->whereNull('deleted_at')
@@ -50,17 +52,15 @@ class StoreFileRequest extends ParentIdBaseRequest
                             $fail('File "' . $value->getClientOriginalName() . '" already exists.');
                         }
                     }
-                },
+                }
             ],
             'folder_name' => [
                 'nullable',
                 'string',
                 function ($attribute, $value, $fail) {
                     if ($value) {
-
                         /** @var $value \Illuminate\Http\UploadedFile */
-                        $file = File::query()
-                            ->where('name', $value)
+                        $file = File::query()->where('name', $value)
                             ->where('created_by', Auth::id())
                             ->where('parent_id', $this->parent_id)
                             ->whereNull('deleted_at')
@@ -70,7 +70,7 @@ class StoreFileRequest extends ParentIdBaseRequest
                             $fail('Folder "' . $value . '" already exists.');
                         }
                     }
-                },
+                }
             ]
         ]);
     }
@@ -81,7 +81,8 @@ class StoreFileRequest extends ParentIdBaseRequest
             return null;
         }
 
-        $parts = explode('/', $paths[0]);
+        $parts = explode("/", $paths[0]);
+
         return $parts[0];
     }
 
@@ -89,10 +90,10 @@ class StoreFileRequest extends ParentIdBaseRequest
     {
         //! laravel the maximum files that can be uploaded is 20
         $filePaths = array_slice($filePaths, 0, count($files));
-
         $filePaths = array_filter($filePaths, fn ($f) => $f != null);
 
         $tree = [];
+
         foreach ($filePaths as $index => $filePath) {
             $parts = explode('/', $filePath);
 
