@@ -12,7 +12,7 @@ use Inertia\Inertia;
 
 class FileController extends Controller
 {
-    public function index(string $folder = null)
+    public function index(Request $request, string $folder = null)
     {
         if ($folder) {
             $folder = File::query()->where('created_by', Auth::id())->where('path', $folder)->firstOrFail();
@@ -28,6 +28,10 @@ class FileController extends Controller
             ->paginate(10);
 
         $files = FileResource::collection($files);
+
+        if ($request->wantsJson()) {
+            return $files;
+        }
 
         $ancestors = FileResource::collection([...$folder->ancestors, $folder]);
 
