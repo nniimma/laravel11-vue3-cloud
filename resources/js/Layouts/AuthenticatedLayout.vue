@@ -97,6 +97,10 @@
                 }
 
                 showErrorDialog(message)
+            },
+            onFinish: () => {
+                fileUploadForm.clearErrors()
+                fileUploadForm.reset()
             }
         })
     }
