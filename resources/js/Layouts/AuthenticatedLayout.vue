@@ -18,7 +18,9 @@
             </template>
         </main>
     </div>
-    <form-progress :form="fileUploadForm"/>
+
+    <error-dialog />
+    <form-progress :form="fileUploadForm" />
 </template>
 
 <script setup>
@@ -27,9 +29,11 @@
     import SearchForm from '@/Components/AuthenticationPage/SearchForm.vue'
     import UserSettingsDropDown from '@/Components/AuthenticationPage/UserSettingsDropDown.vue'
     import FormProgress from '@/Components/AuthenticationPage/FormProgress.vue'
+    import ErrorDialog from '@/Components/ErrorDialog.vue'
     import {
         emitter,
-        FILE_UPLOAD_STARTED
+        FILE_UPLOAD_STARTED,
+        showErrorDialog
     } from '@/event-bus'
     import {
         useForm,
@@ -80,7 +84,21 @@
         fileUploadForm.files = files
         fileUploadForm.relative_paths = [...files].map(f => f.webkitRelativePath)
 
-        fileUploadForm.post(route('files.store'))
+        fileUploadForm.post(route('files.store'), {
+            onSuccess: () => {
+
+            },
+            onError: errors => {
+                let message = ''
+                if (Object.keys(errors).length > 0) {
+                    message = errors[Object.keys(errors)[0]]
+                } else {
+                    message = 'Error during file upload please try again later.'
+                }
+
+                showErrorDialog(message)
+            }
+        })
     }
 
     // Hooks
