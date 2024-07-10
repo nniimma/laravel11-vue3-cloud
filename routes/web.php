@@ -30,6 +30,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->where('folder', '(.*)')->name('files.index');
     Route::post('/folders', [FileController::class, 'folderStore'])->name('folders.store');
     Route::post('/files', [FileController::class, 'fileStore'])->name('files.store');
+    Route::delete('/files', [FileController::class, 'destroy'])->name('files.destroy');
 });
 
 require __DIR__ . '/auth.php';

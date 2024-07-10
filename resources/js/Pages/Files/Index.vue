@@ -20,11 +20,18 @@
                     </div>
                 </li>
             </ol>
+
+            <div>
+                <delete-files-button :delete-all="allSelected" :delete-ids="selectedIds" @delete="onDelete" />
+            </div>
         </nav>
         <div class="flex-1 overflow-auto">
             <table class="min-w-full">
                 <thead class="bg-gray-100 border-b sticky top-0">
                     <tr>
+                        <th class="text-sm font-medium text-gray-900 px-6 py-4 text-left w-[30px] max-w-[30px] pr-0">
+                            <checkbox @change="onSelectAllChange" v-model:checked="allSelected" />
+                        </th>
                         <th class="text-sm font-medium text-gray-900 px-6 py-4 text-left">Name</th>
                         <th class="text-sm font-medium text-gray-900 px-6 py-4 text-left">Owner</th>
                         <th class="text-sm font-medium text-gray-900 px-6 py-4 text-left">Last Modified</th>
@@ -32,9 +39,13 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="file of allFiles.data" :key="file.id"
-                        class="bg-white border-b transition duration-300 ease-in-out hover:bg-gray-100 cursor-default"
-                        @dblclick="openFolder(file)">
+                    <tr v-for="file of allFiles.data" :key="file.id" @dblclick="openFolder(file)" @click="$event => toggleFileSelect(file)"
+                        class=" border-b transition duration-300 ease-in-out hover:bg-blue-200 cursor-default"
+                        :class="(selected[file.id] || allSelected) ? 'bg-blue-50' : 'bg-white'">
+                        <td
+                            class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 w-[30px] max-w-[30px] pr-0">
+                            <checkbox @change="event => onSelectedCheckBoxChange(file)" v-model="selected[file.id]" :checked="selected[file.id] || allSelected" />
+                        </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 flex gap-2">
                             <file-icon :file="file" />
                             {{ file . name }}
@@ -70,7 +81,10 @@
         ChevronRightIcon
     } from '@heroicons/vue/20/solid';
     import FileIcon from '@/Components/Files/FileIcon.vue';
+    import Checkbox from '@/Components/Checkbox.vue';
+    import DeleteFilesButton from '@/Components/Files/DeleteFilesButton.vue';
     import {
+        computed,
         onMounted,
         onUpdated,
         ref
@@ -89,6 +103,8 @@
     })
 
     // Refs
+    const allSelected = ref(false)
+    const selected = ref({})
     const loadMoreIntersect = ref(null)
     const allFiles = ref({
         data: props.files.data,
@@ -97,6 +113,8 @@
 
 
     // Computed
+    const selectedIds = computed(() => Object.entries(selected.value).filter(a => a[1]).map(a => a[0]))
+
     // Methods
     function openFolder(file) {
         if (!file.is_folder) {
@@ -119,6 +137,38 @@
         })
     }
 
+    function onSelectAllChange() {
+        allFiles.value.data.forEach(f => {
+            selected.value[f.id] = allSelected.value
+        })
+    }
+
+    function toggleFileSelect(file){
+        selected.value[file.id] = !selected.value[file.id]
+        onSelectedCheckBoxChange(file)
+    }
+
+    function onSelectedCheckBoxChange(file){
+        if(!selected.value[file.id]){
+            allSelected.value = false
+        } else{
+            let checked = true
+            for(let file of allFiles.value.data){
+                if(!selected.value[file.id]){
+                    checked = false
+                    break
+                }
+            }
+
+            allSelected.value = checked
+        }
+    }
+
+    function onDelete(){
+        allSelected.value = false
+        selected.value = {}
+    }
+
     // Hooks
     onUpdated(() => {
         allFiles.value = {
@@ -128,11 +178,12 @@
     })
 
     onMounted(() => {
-        const observer = new IntersectionObserver((entries) => entries.forEach(entry => entry.isIntersecting && loadMore()), {
-        rootMargin: '-250px 0px 0px 0px'
-    })
+        const observer = new IntersectionObserver((entries) => entries.forEach(entry => entry.isIntersecting &&
+            loadMore()), {
+            rootMargin: '-250px 0px 0px 0px'
+        })
 
-    observer.observe(loadMoreIntersect.value)
+        observer.observe(loadMoreIntersect.value)
     })
 </script>
 
