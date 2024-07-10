@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\DestroyFileRequest;
+use App\Http\Requests\FileActionRequest;
 use App\Http\Requests\StoreFileRequest;
 use App\Http\Requests\StoreFolderRequest;
 use App\Http\Resources\FileResource;
@@ -75,7 +75,7 @@ class FileController extends Controller
         }
     }
 
-    public function destroy(DestroyFileRequest $request)
+    public function destroy(FileActionRequest $request)
     {
         $data = $request->validated();
         $parent = $request->parent;
