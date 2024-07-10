@@ -46,7 +46,7 @@
             show.value = true
             message.value = msg
 
-            timeoutId = setTimeout(() => {
+            setTimeout(() => {
                 close()
             }, 3000)
         })
