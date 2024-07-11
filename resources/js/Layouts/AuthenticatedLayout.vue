@@ -20,6 +20,7 @@
     </div>
 
     <error-dialog />
+    <notification/>
     <form-progress :form="fileUploadForm" />
 </template>
 
@@ -30,6 +31,7 @@
     import UserSettingsDropDown from '@/Components/AuthenticationPage/UserSettingsDropDown.vue'
     import FormProgress from '@/Components/AuthenticationPage/FormProgress.vue'
     import ErrorDialog from '@/Components/ErrorDialog.vue'
+    import Notification from '@/Components/Notification.vue'
     import {
         emitter,
         FILE_UPLOAD_STARTED,

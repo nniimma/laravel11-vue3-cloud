@@ -13,7 +13,7 @@
     // Imports
     import ConfirmationDialog from '@/Components/ConfirmationDialog.vue'
     import DangerButton from '@/Components/DangerButton.vue'
-    import { showErrorDialog } from '@/event-bus';
+    import { showErrorDialog, showSuccessNotification } from '@/event-bus';
     import {
         TrashIcon
     } from '@heroicons/vue/20/solid';
@@ -77,6 +77,7 @@
             onSuccess: () => {
                 showDeleteDialog.value = false
                 emit('delete')
+                showSuccessNotification('Selected files have been deleted.')
             }
         })
     }
