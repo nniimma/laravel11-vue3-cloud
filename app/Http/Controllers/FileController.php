@@ -150,7 +150,7 @@ class FileController extends Controller
 
         if ($all) {
             $url = $this->createZip($parent->children);
-            $fileName = $parent->name . 'zip';
+            $fileName = $parent->name . '.zip';
         } else {
             if (count($ids) === 1) {
                 $file = File::find($ids[0]);
