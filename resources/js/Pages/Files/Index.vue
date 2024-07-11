@@ -21,7 +21,8 @@
                 </li>
             </ol>
 
-            <div>
+            <div class="flex">
+                <download-files-button class="mr-2" :all="allSelected" :ids="selectedIds" />
                 <delete-files-button :delete-all="allSelected" :delete-ids="selectedIds" @delete="onDelete" />
             </div>
         </nav>
@@ -82,6 +83,7 @@
     } from '@heroicons/vue/20/solid';
     import FileIcon from '@/Components/Files/FileIcon.vue';
     import Checkbox from '@/Components/Checkbox.vue';
+    import DownloadFilesButton from '@/Components/Files/DownloadFilesButton.vue';
     import DeleteFilesButton from '@/Components/Files/DeleteFilesButton.vue';
     import {
         computed,

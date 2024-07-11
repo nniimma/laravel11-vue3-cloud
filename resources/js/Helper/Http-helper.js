@@ -4,5 +4,5 @@ export function httpGet(url){
             'Content-Type': 'application/json',
             'Accept': 'application/json'
         }
-    }).then(Response => Response.json())
+    }).then(response => response.json())
 }
