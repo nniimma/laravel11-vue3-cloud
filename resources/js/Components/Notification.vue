@@ -20,20 +20,29 @@
 </template>
 
 <script setup>
+    // Imports
     import { emitter, SHOW_NOTIFICATION } from "@/event-bus";
     import { onMounted, ref } from "vue";
 
+    // Uses
+
+    // Refs
     const show = ref(false);
     const message = ref('');
     const type = ref('success');
     const progress = ref(100);
 
+    // Props & Emits
+    
+    // Computed
+    // Methods
     function close() {
         show.value = false;
         type.value = '';
         message.value = '';
     }
-
+    
+    // Hooks
     onMounted(() => {
         emitter.on(SHOW_NOTIFICATION, ({ type: t, message: msg }) => {
             show.value = true;
