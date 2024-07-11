@@ -1,11 +1,11 @@
 <template>
     <Modal :show="show" max-width="md">
-        <div class="p-6 text-center bg-red-500">
-            <!-- <h2 class="text-2xl mb-2 text-red-600 font-semibold">Error</h2> -->
-            <p class="text-xl font-bold text-white">{{ message }}</p>
-            <!-- <div class="mt-6 flex justify-end">
-                <primary-button @click="close">OK</primary-button>
-            </div> -->
+        <div class="p-6">
+            <h2 class="text-2xl mb-2 text-red-600 font-semibold">Error</h2>
+            <p>{{message}}</p>
+            <div class="mt-6 flex justify-end">
+                <PrimaryButton @click="close">OK</PrimaryButton>
+            </div>
         </div>
     </Modal>
 </template>
@@ -46,9 +46,9 @@
             show.value = true
             message.value = msg
 
-            setTimeout(() => {
-                close()
-            }, 3000)
+            // setTimeout(() => {
+            //     close()
+            // }, 3000)
         })
     })
 </script>
