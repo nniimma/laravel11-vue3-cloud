@@ -35,7 +35,8 @@
     import {
         emitter,
         FILE_UPLOAD_STARTED,
-        showErrorDialog
+        showErrorDialog,
+        showSuccessNotification
     } from '@/event-bus'
     import {
         useForm,
@@ -88,7 +89,7 @@
 
         fileUploadForm.post(route('files.store'), {
             onSuccess: () => {
-
+                showSuccessNotification(`${files.length} files uploaded successfully.`)
             },
             onError: errors => {
                 let message = ''

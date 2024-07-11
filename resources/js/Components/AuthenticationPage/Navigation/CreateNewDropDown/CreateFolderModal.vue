@@ -39,6 +39,7 @@
       nextTick,
         ref
     } from "vue";
+import { showSuccessNotification } from "@/event-bus";
 
     // Uses
     const form = useForm({
@@ -75,7 +76,7 @@
             onSuccess: () => {
                 closeModal()
                 form.reset()
-
+                showSuccessNotification('Folder created successfully.')
             },
             onError: () => folderNameInput.value.focus()
         })
