@@ -6,7 +6,7 @@
 
             <div class="mt-6 flex justify-end">
                 <secondary-button @click="$event => emit('cancle')">Cancle</secondary-button>
-                <danger-button class="ml-3" @click="$event => emit('confirm')">Delete</danger-button>
+                <danger-button class="ml-3" @click="$event => emit('confirm')">Confirm</danger-button>
             </div>
         </div>
     </modal>

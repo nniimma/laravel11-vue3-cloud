@@ -11,7 +11,7 @@
                 <nav-link :href="route('files.index')" :active="$page.url == '/files'">My Files</nav-link>
                 <nav-link href="/">Shared with me</nav-link>
                 <nav-link href="/">Shared by me</nav-link>
-                <nav-link href="/">Trash</nav-link>
+                <nav-link :href="route('trash')" :active="$page.url == '/trash'">Trash</nav-link>
             </div>
          </div>
     </nav>
