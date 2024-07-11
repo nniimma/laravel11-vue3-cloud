@@ -9,6 +9,7 @@
 <script setup>
     // Imports
     import PrimaryButton from '@/Components/PrimaryButton.vue'
+import { showErrorNotification } from '@/event-bus';
     import {
         httpGet
     } from '@/Helper/Http-helper';
@@ -42,6 +43,7 @@
     // Methods
     function download() {
         if (!props.all && props.ids.length == 0) {
+            showErrorNotification('Please select at least one file to download.')
             return
         }
 

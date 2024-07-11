@@ -13,7 +13,7 @@
             <span>{{ message }}</span>
             <div class="h-1 mt-2 bg-gray-200 rounded-full relative">
                 <div :style="{ width: progress + '%', left: (100 - progress) + '%' }"
-                     class="h-full bg-emerald-500 rounded-full absolute top-0"></div>
+                     class="h-full bg-gray-500 rounded-full absolute top-0"></div>
             </div>
         </div>
     </transition>

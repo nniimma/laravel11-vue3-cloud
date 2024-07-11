@@ -13,7 +13,7 @@
     // Imports
     import ConfirmationDialog from '@/Components/ConfirmationDialog.vue'
     import DangerButton from '@/Components/DangerButton.vue'
-    import { showErrorDialog, showSuccessNotification } from '@/event-bus';
+    import { showErrorDialog, showErrorNotification, showSuccessNotification } from '@/event-bus';
     import {
         TrashIcon
     } from '@heroicons/vue/20/solid';
@@ -55,7 +55,8 @@
     // Methods
     function onDeleteClick() {
         if (!props.deleteAll && !props.deleteIds.length) {
-            showErrorDialog('Please select at least one file to delete.')
+            // showErrorDialog('Please select at least one file to delete.')
+            showErrorNotification('Please select at least one file to delete.')
             return
         }
         showDeleteDialog.value = true
