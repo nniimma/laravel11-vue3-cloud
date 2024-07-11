@@ -65,6 +65,7 @@ class File extends Model
             $model->path = (!$model->parent->isRoot() ? $model->parent->path . '/' : '') . Str::slug($model->name);
         });
 
+        //! in this case each time that we delete a file it will delete it from storage as well.
         // static::deleted(function (File $model) {
         //     if (!$model->is_folder) {
         //         Storage::delete($model->storage_path);
@@ -77,5 +78,22 @@ class File extends Model
         $this->deleted_at = Carbon::now();
 
         return $this->save();
+    }
+
+    public function DeletePermanently()
+    {
+        $this->deleteFilesFromStorage([$this]);
+        $this->forceDelete();
+    }
+
+    public function deleteFilesFromStorage($files)
+    {
+        foreach ($files as $file) {
+            if ($file->is_folder) {
+                $this->deleteFilesFromStorage($file->children);
+            } else {
+                Storage::delete($file->storage_path);
+            }
+        }
     }
 }

@@ -1,21 +1,21 @@
 <template>
-    <primary-button @click="onClick"
-        class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900  border border-gray-200 rounded-lg hover:bg-blue-800 focus:z-10 focus:ring-2 focus:ring-blue-500 mr-2">
-        <ArrowLeftOnRectangleIcon   class="h-4 w-4 mr-2" />
-        Restore
-    </primary-button>
+    <danger-button @click="onClick"
+        class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900  border border-gray-200 rounded-lg hover:bg-red-800 focus:z-10 focus:ring-2 focus:ring-blue-500 ">
+        <TrashIcon   class="h-4 w-4 mr-2" />
+        Delete Permanently
+    </danger-button>
 
-    <confirmation-dialog :show="showConfirmationDialog" message="Are you sure you want to restore the selected files?"
+    <confirmation-dialog :show="showConfirmationDialog" message="Are you sure you want to permanently delete the selected files?"
         @cancle="onCancle" @confirm="onConfirm" />
 </template>
 
 <script setup>
     // Imports
     import ConfirmationDialog from '@/Components/ConfirmationDialog.vue'
-    import PrimaryButton from '@/Components/PrimaryButton.vue'
+    import DangerButton from '@/Components/DangerButton.vue'
     import { showErrorDialog, showErrorNotification, showSuccessNotification } from '@/event-bus';
     import {
-        ArrowLeftOnRectangleIcon  
+        TrashIcon  
     } from '@heroicons/vue/20/solid';
     import {
         useForm,
@@ -49,14 +49,14 @@
         }
     })
 
-    const emit = defineEmits(['restore'])
+    const emit = defineEmits(['delete'])
 
     // Computed
     // Methods
     function onClick() {
         if (!props.allSelected && !props.selectedIds.length) {
-            // showErrorDialog('Please select at least one file to restore.')
-            showErrorNotification('Please select at least one file to restore.')
+            // showErrorDialog('Please select at least one file to delete.')
+            showErrorNotification('Please select at least one file to delete.')
             return
         }
         showConfirmationDialog.value = true
@@ -69,15 +69,16 @@
     function onConfirm() {
         if (props.allSelected) {
             form.all = true
+            form.ids = []
         } else {
             form.ids = props.selectedIds
         }
 
-        form.put(route('files.restore'), {
+        form.delete(route('files.destroyPermanently'), {
             onSuccess: () => {
                 showConfirmationDialog.value = false
-                emit('restore')
-                showSuccessNotification('Selected files have been restored.')
+                emit('delete')
+                showSuccessNotification('Selected files have been deleted permanently.')
             }
         })
     }
