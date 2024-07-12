@@ -22,6 +22,10 @@
             </ol>
 
             <div class="flex">
+                <label class="mr-2 border-2 border-gray-400 rounded-md p-2">
+                    Only Favorites
+                    <checkbox @change="showOnlyFavorites" v-model:checked="onlyFavorites" />
+                </label>
                 <download-files-button class="mr-2" :all="allSelected" :ids="selectedIds" />
                 <delete-files-button :delete-all="allSelected" :delete-ids="selectedIds" @delete="onDelete" />
             </div>
@@ -33,7 +37,7 @@
                         <th class="text-sm font-medium text-gray-900 px-6 py-4 text-left w-[30px] max-w-[30px] pr-0">
                             <checkbox @change="onSelectAllChange" v-model:checked="allSelected" />
                         </th>
-                        <th class="text-sm font-medium text-gray-900 px-6 py-4 text-left w-[30px] max-w-[30px]">Favorite
+                        <th class="text-sm font-medium text-gray-900 px-6 py-4 text-left w-[30px] max-w-[30px]">
                         </th>
                         <th class="text-sm font-medium text-gray-900 px-6 py-4 text-left">Name</th>
                         <th class="text-sm font-medium text-gray-900 px-6 py-4 text-left">Owner</th>
@@ -129,12 +133,14 @@
 
     // Refs
     const allSelected = ref(false)
+    const onlyFavorites = ref(false)
     const selected = ref({})
     const loadMoreIntersect = ref(null)
     const allFiles = ref({
         data: props.files.data,
         next: props.files.links.next
     })
+    let params = null
 
 
     // Computed
@@ -200,13 +206,22 @@
         }).then(() => {
             file.is_favourite = !file.is_favourite
             if (file.is_favourite) {
-                    showSuccessNotification('Selected file have been added to favourites.')
-                } else {
-                    showSuccessNotification('Selected file have been removed from favourites.')
-                }
+                showSuccessNotification('Selected file have been added to favourites.')
+            } else {
+                showSuccessNotification('Selected file have been removed from favourites.')
+            }
         }).catch((e) => {
             showErrorNotification('Error: ' + e.error.message);
         })
+    }
+
+    function showOnlyFavorites() {
+        if(onlyFavorites.value){
+            params.set('favorites', 1)
+        }else{
+            params.delete('favorites')
+        }
+        router.get(window.location.pathname + '?' + params.toString())
     }
 
     // Hooks
@@ -218,6 +233,9 @@
     })
 
     onMounted(() => {
+        params = new URLSearchParams(window.location.search)
+        onlyFavorites.value = params.get('favorites') === '1'
+
         const observer = new IntersectionObserver((entries) => entries.forEach(entry => entry.isIntersecting &&
             loadMore()), {
             rootMargin: '-250px 0px 0px 0px'
