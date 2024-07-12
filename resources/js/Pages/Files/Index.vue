@@ -22,7 +22,6 @@
             </ol>
 
             <div class="flex">
-                <!-- <favorites-button :all-selected="allSelected" :selected-ids="selectedIds" /> -->
                 <download-files-button class="mr-2" :all="allSelected" :ids="selectedIds" />
                 <delete-files-button :delete-all="allSelected" :delete-ids="selectedIds" @delete="onDelete" />
             </div>
@@ -103,7 +102,6 @@
     import Checkbox from '@/Components/Checkbox.vue';
     import DownloadFilesButton from '@/Components/Files/DownloadFilesButton.vue';
     import DeleteFilesButton from '@/Components/Files/DeleteFilesButton.vue';
-    import FavoritesButton from '@/Components/Files/FavoritesButton.vue';
     import {
         computed,
         onMounted,
