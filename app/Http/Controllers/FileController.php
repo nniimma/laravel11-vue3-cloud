@@ -6,8 +6,10 @@ use App\Http\Requests\FileActionRequest;
 use App\Http\Requests\StoreFileRequest;
 use App\Http\Requests\StoreFolderRequest;
 use App\Http\Requests\TrashFilesRequest;
+use App\Http\Requests\UpdateFavoriteRequest;
 use App\Http\Resources\FileResource;
 use App\Models\File;
+use App\Models\StarredFile;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -27,10 +29,12 @@ class FileController extends Controller
         }
 
         $files = File::query()
+            ->with('starred')
             ->where('parent_id', $folder->id)
             ->where('created_by', Auth::id())
             ->orderBy('is_folder', 'desc')
             ->orderBy('created_at', 'desc')
+            ->orderBy('id', 'desc')
             ->paginate(10);
 
         $files = FileResource::collection($files);
@@ -142,7 +146,6 @@ class FileController extends Controller
         $data = $request->validated();
         $parent = $request->parent;
 
-
         $all = $data['all'] ?? false;
         $ids = $data['ids'] ?? [];
 
@@ -160,7 +163,7 @@ class FileController extends Controller
                 if ($file->is_folder) {
                     if ($file->children->count() === 0) {
                         return [
-                            'message' => 'The folder is empty.'
+                            'message' => 'The folder is empty.',
                         ];
                     }
                     $url = $this->createZip($file->children);
@@ -173,7 +176,6 @@ class FileController extends Controller
                     $fileName = $file->name;
                 }
             } else {
-
                 $files = File::query()->whereIn('id', $ids)->get();
                 $url = $this->createZip($files);
 
@@ -183,7 +185,7 @@ class FileController extends Controller
 
         return [
             'url' => $url,
-            'fileName' => $fileName
+            'fileName' => $fileName,
         ];
     }
 
@@ -221,10 +223,7 @@ class FileController extends Controller
 
     public function trash(Request $request)
     {
-        $files = File::onlyTrashed()->where('created_by', Auth::id())
-            ->orderBy('is_folder', 'DESC')
-            ->orderBy('deleted_at', 'DESC')
-            ->paginate(10);
+        $files = File::onlyTrashed()->where('created_by', Auth::id())->orderBy('is_folder', 'DESC')->orderBy('deleted_at', 'DESC')->paginate(10);
 
         $files = FileResource::collection($files);
 
@@ -277,5 +276,35 @@ class FileController extends Controller
         }
 
         return to_route('trash');
+    }
+
+    public function addToFavorites(UpdateFavoriteRequest $request)
+    {
+        $data = $request->validated();
+        $id = $data['id'];
+
+        if (empty($id)) {
+            return ['message' => 'Please select files to add to favorite.'];
+        }
+
+        $file = File::find($id);
+        $user_id = Auth::id();
+        $starredFile = StarredFile::query()
+            ->where('file_id', $file->id)
+            ->where('user_id', $user_id)
+            ->first();
+
+        if ($starredFile) {
+            $starredFile->delete();
+        } else {
+            StarredFile::create([
+                'file_id' => $file->id,
+                'user_id' => $user_id,
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
+            ]);
+        }
+
+        return redirect()->back();
     }
 }

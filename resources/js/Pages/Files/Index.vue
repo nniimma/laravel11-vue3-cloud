@@ -22,6 +22,7 @@
             </ol>
 
             <div class="flex">
+                <!-- <favorites-button :all-selected="allSelected" :selected-ids="selectedIds" /> -->
                 <download-files-button class="mr-2" :all="allSelected" :ids="selectedIds" />
                 <delete-files-button :delete-all="allSelected" :delete-ids="selectedIds" @delete="onDelete" />
             </div>
@@ -33,6 +34,8 @@
                         <th class="text-sm font-medium text-gray-900 px-6 py-4 text-left w-[30px] max-w-[30px] pr-0">
                             <checkbox @change="onSelectAllChange" v-model:checked="allSelected" />
                         </th>
+                        <th class="text-sm font-medium text-gray-900 px-6 py-4 text-left w-[30px] max-w-[30px]">Favorite
+                        </th>
                         <th class="text-sm font-medium text-gray-900 px-6 py-4 text-left">Name</th>
                         <th class="text-sm font-medium text-gray-900 px-6 py-4 text-left">Owner</th>
                         <th class="text-sm font-medium text-gray-900 px-6 py-4 text-left">Last Modified</th>
@@ -40,12 +43,21 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="file of allFiles.data" :key="file.id" @dblclick="openFolder(file)" @click="$event => toggleFileSelect(file)"
+                    <tr v-for="file of allFiles.data" :key="file.id" @dblclick="openFolder(file)"
+                        @click="$event => toggleFileSelect(file)"
                         class=" border-b transition duration-300 ease-in-out hover:bg-blue-200 cursor-default"
                         :class="(selected[file.id] || allSelected) ? 'bg-blue-50' : 'bg-white'">
                         <td
                             class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 w-[30px] max-w-[30px] pr-0">
-                            <checkbox @change="event => onSelectedCheckBoxChange(file)" v-model="selected[file.id]" :checked="selected[file.id] || allSelected" />
+                            <checkbox @change="event => onSelectedCheckBoxChange(file)" v-model="selected[file.id]"
+                                :checked="selected[file.id] || allSelected" />
+                        </td>
+                        <td
+                            class="px-6 py-4 whitespace-nowrap text-sm font-medium gap-2 w-[30px] max-w-[30px] text-yellow-500">
+                            <div @click.stop.prevent="addRemoveFavorite(file)">
+                                <StarSolidIcon v-if="file.is_favourite" class="w-5 h-5" />
+                                <StarOutlineIcon v-else class="w-5 h-5" />
+                            </div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 flex gap-2">
                             <file-icon :file="file" />
@@ -74,17 +86,24 @@
     import {
         Head,
         Link,
-        router
+        router,
+        useForm,
+        usePage
     } from '@inertiajs/vue3';
     import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
     import {
-        HomeIcon,
-        ChevronRightIcon
-    } from '@heroicons/vue/20/solid';
+        StarIcon as StarSolidIcon,
+        ChevronRightIcon,
+        HomeIcon
+    } from '@heroicons/vue/20/solid'
+    import {
+        StarIcon as StarOutlineIcon
+    } from '@heroicons/vue/24/outline'
     import FileIcon from '@/Components/Files/FileIcon.vue';
     import Checkbox from '@/Components/Checkbox.vue';
     import DownloadFilesButton from '@/Components/Files/DownloadFilesButton.vue';
     import DeleteFilesButton from '@/Components/Files/DeleteFilesButton.vue';
+    import FavoritesButton from '@/Components/Files/FavoritesButton.vue';
     import {
         computed,
         onMounted,
@@ -92,10 +111,16 @@
         ref
     } from 'vue';
     import {
-        httpGet
+        httpGet,
+        httpPost
     } from '@/Helper/Http-helper';
+    import {
+        showErrorNotification,
+        showSuccessNotification
+    } from '@/event-bus';
 
     // Uses
+    const page = usePage()
 
     // Props & Emits
     const props = defineProps({
@@ -145,18 +170,18 @@
         })
     }
 
-    function toggleFileSelect(file){
+    function toggleFileSelect(file) {
         selected.value[file.id] = !selected.value[file.id]
         onSelectedCheckBoxChange(file)
     }
 
-    function onSelectedCheckBoxChange(file){
-        if(!selected.value[file.id]){
+    function onSelectedCheckBoxChange(file) {
+        if (!selected.value[file.id]) {
             allSelected.value = false
-        } else{
+        } else {
             let checked = true
-            for(let file of allFiles.value.data){
-                if(!selected.value[file.id]){
+            for (let file of allFiles.value.data) {
+                if (!selected.value[file.id]) {
                     checked = false
                     break
                 }
@@ -166,9 +191,24 @@
         }
     }
 
-    function onDelete(){
+    function onDelete() {
         allSelected.value = false
         selected.value = {}
+    }
+
+    function addRemoveFavorite(file) {
+        httpPost(route('files.favorites'), {
+            id: file.id
+        }).then(() => {
+            file.is_favourite = !file.is_favourite
+            if (file.is_favourite) {
+                    showSuccessNotification('Selected file have been added to favourites.')
+                } else {
+                    showSuccessNotification('Selected file have been removed from favourites.')
+                }
+        }).catch((e) => {
+            showErrorNotification('Error: ' + e.error.message);
+        })
     }
 
     // Hooks
