@@ -1,0 +1,3 @@
+todo lists:
+rewrite with laravel naming rules
+the person should not be able to share file with himself
