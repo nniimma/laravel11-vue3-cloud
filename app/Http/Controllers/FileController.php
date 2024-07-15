@@ -3,16 +3,22 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\FileActionRequest;
+use App\Http\Requests\ShareFileRequest;
 use App\Http\Requests\StoreFileRequest;
 use App\Http\Requests\StoreFolderRequest;
 use App\Http\Requests\TrashFilesRequest;
 use App\Http\Requests\UpdateFavoriteRequest;
 use App\Http\Resources\FileResource;
+use App\Mail\ShareFilesMail;
 use App\Models\File;
+use App\Models\FileShare;
 use App\Models\StarredFile;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Illuminate\Support\Str;
@@ -313,6 +319,44 @@ class FileController extends Controller
                 'updated_at' => Carbon::now(),
             ]);
         }
+
+        return redirect()->back();
+    }
+
+    public function share(ShareFileRequest $request)
+    {
+        $data = $request->validated();
+        $parent = $request->parent;
+
+        $all = $data['all'] ?? false;
+        $ids = $data['ids'] ?? [];
+        $email = $data['email'] ?? [];
+        $user = User::query()->where('email', $email)->first();
+
+        if ($all) {
+            $files = $parent->children;
+        } else {
+            $files = File::find($ids);
+        }
+
+        $data = [];
+        $ids = Arr::pluck($files, 'id');
+        $existingFileIds = FileShare::query()->whereIn('file_id', $ids)->where('user_id', $user->id)->get()->keyBy('file_id');
+        foreach ($files as $file) {
+            if ($existingFileIds->has($file->id)) {
+                continue;
+            }
+            $data[] = [
+                'file_id' => $file->id,
+                'user_id' => $user->id,
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
+            ];
+        }
+
+        FileShare::insert($data);
+
+        //todo: send an email
 
         return redirect()->back();
     }

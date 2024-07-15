@@ -26,6 +26,7 @@
                     Only Favorites
                     <checkbox @change="showOnlyFavorites" v-model:checked="onlyFavorites" />
                 </label>
+                <share-files-button :all-selected="allSelected" :selected-ids="selectedIds"/>
                 <download-files-button class="mr-2" :all="allSelected" :ids="selectedIds" />
                 <delete-files-button :delete-all="allSelected" :delete-ids="selectedIds" @delete="onDelete" />
             </div>
@@ -106,6 +107,7 @@
     import Checkbox from '@/Components/Checkbox.vue';
     import DownloadFilesButton from '@/Components/Files/DownloadFilesButton.vue';
     import DeleteFilesButton from '@/Components/Files/DeleteFilesButton.vue';
+    import ShareFilesButton from '@/Components/Files/ShareFilesButton.vue';
     import {
         computed,
         onMounted,
