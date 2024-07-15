@@ -238,7 +238,12 @@ class FileController extends Controller
 
     public function trash(Request $request)
     {
-        $files = File::onlyTrashed()->where('created_by', Auth::id())->orderBy('is_folder', 'DESC')->orderBy('deleted_at', 'DESC')->paginate(10);
+        $files = File::onlyTrashed()
+            ->where('created_by', Auth::id())
+            ->orderBy('is_folder', 'DESC')
+            ->orderBy('deleted_at', 'DESC')
+            ->orderBy('id', 'DESC')
+            ->paginate(10);
 
         $files = FileResource::collection($files);
 
@@ -356,9 +361,44 @@ class FileController extends Controller
 
         FileShare::insert($data);
 
-        //todo: send an email
         Mail::to($user)->send(new ShareFilesMail($user, Auth::user(), $files));
 
         return redirect()->back();
+    }
+
+    public function sharedWithMe(Request $request)
+    {
+        $files = File::query()
+            ->join('file_shares', 'file_shares.file_id', 'files.id')
+            ->where('file_shares.user_id', Auth::id())
+            ->orderBy('file_shares.created_at', 'DESC')
+            ->orderBy('files.id', 'DESC')
+            ->paginate(10);
+
+        $files = FileResource::collection($files);
+
+        if ($request->wantsJson()) {
+            return $files;
+        }
+
+        return Inertia::render('Files/SharedWithMe', compact('files'));
+    }
+
+    public function sharedByMe(Request $request)
+    {
+        $files = File::query()
+            ->join('file_shares', 'file_shares.file_id', 'files.id')
+            ->where('files.created_by', Auth::id())
+            ->orderBy('file_shares.created_at', 'DESC')
+            ->orderBy('files.id', 'DESC')
+            ->paginate(10);
+
+        $files = FileResource::collection($files);
+
+        if ($request->wantsJson()) {
+            return $files;
+        }
+
+        return Inertia::render('Files/SharedByMe', compact('files'));
     }
 }
