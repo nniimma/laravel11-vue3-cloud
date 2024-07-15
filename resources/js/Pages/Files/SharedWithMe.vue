@@ -5,6 +5,7 @@
     <AuthenticatedLayout>
         <nav class="flex items-center justify-end p-1 mb-3">
             <div class="flex">
+                <download-files-button class="mr-2" :all="allSelected" :ids="selectedIds" :shared-with-me="true"/>
             </div>
         </nav>
         <div class="flex-1 overflow-auto">
@@ -54,8 +55,7 @@
     import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
     import FileIcon from '@/Components/Files/FileIcon.vue';
     import Checkbox from '@/Components/Checkbox.vue';
-    import DeletePermanentlyButton from '@/Components/Files/DeletePermanentlyButton.vue';
-    import RestoreFilesButton from '@/Components/Files/RestoreFilesButton.vue';
+    import DownloadFilesButton from '@/Components/Files/DownloadFilesButton.vue';
     import {
         computed,
         onMounted,

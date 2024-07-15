@@ -9,7 +9,9 @@
 <script setup>
     // Imports
     import PrimaryButton from '@/Components/PrimaryButton.vue'
-import { showErrorNotification } from '@/event-bus';
+    import {
+        showErrorNotification
+    } from '@/event-bus';
     import {
         httpGet
     } from '@/Helper/Http-helper';
@@ -36,7 +38,9 @@ import { showErrorNotification } from '@/event-bus';
         ids: {
             type: Array,
             required: false
-        }
+        },
+        sharedWithMe: false,
+        sharedByMe: false
     })
 
     // Computed
@@ -48,7 +52,9 @@ import { showErrorNotification } from '@/event-bus';
         }
 
         const p = new URLSearchParams()
-        p.append('parent_id', page.props.folder.id)
+        if (page.props.folder?.id) {
+            p.append('parent_id', page.props.folder?.id)
+        }
         if (props.all) {
             p.append('all', props.all ? 1 : 0)
         } else {
@@ -57,8 +63,14 @@ import { showErrorNotification } from '@/event-bus';
             }
         }
 
-        httpGet(route('files.download') + '?' + p.toString()).then(response => {
-            // console.log(response);
+        let url = route('files.download')
+        if (props.sharedWithMe) {
+            url = route('files.downloadSharedWithMe')
+        } else if (props.sharedByMe) {
+            url = route('files.downloadSharedByMe')
+        }
+
+        httpGet(url + '?' + p.toString()).then(response => {
             if (!response.url) return;
 
             const a = document.createElement('a')

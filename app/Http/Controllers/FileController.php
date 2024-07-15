@@ -172,30 +172,7 @@ class FileController extends Controller
             $url = $this->createZip($parent->children);
             $fileName = $parent->name . '.zip';
         } else {
-            if (count($ids) === 1) {
-                $file = File::find($ids[0]);
-
-                if ($file->is_folder) {
-                    if ($file->children->count() === 0) {
-                        return [
-                            'message' => 'The folder is empty.',
-                        ];
-                    }
-                    $url = $this->createZip($file->children);
-                    $fileName = $file->name . '.zip';
-                } else {
-                    $destination = 'public/' . pathinfo($file->storage_path, PATHINFO_BASENAME);
-                    Storage::copy($file->storage_path, $destination);
-
-                    $url = asset(Storage::url($destination));
-                    $fileName = $file->name;
-                }
-            } else {
-                $files = File::query()->whereIn('id', $ids)->get();
-                $url = $this->createZip($files);
-
-                $fileName = $parent->name . '.zip';
-            }
+            [$url, $fileName] = $this->getDownloadUrl($ids, $parent->name);
         }
 
         return [
@@ -368,12 +345,7 @@ class FileController extends Controller
 
     public function sharedWithMe(Request $request)
     {
-        $files = File::query()
-            ->join('file_shares', 'file_shares.file_id', 'files.id')
-            ->where('file_shares.user_id', Auth::id())
-            ->orderBy('file_shares.created_at', 'DESC')
-            ->orderBy('files.id', 'DESC')
-            ->paginate(10);
+        $files = File::getSharedWithMe()->paginate(10);
 
         $files = FileResource::collection($files);
 
@@ -386,12 +358,7 @@ class FileController extends Controller
 
     public function sharedByMe(Request $request)
     {
-        $files = File::query()
-            ->join('file_shares', 'file_shares.file_id', 'files.id')
-            ->where('files.created_by', Auth::id())
-            ->orderBy('file_shares.created_at', 'DESC')
-            ->orderBy('files.id', 'DESC')
-            ->paginate(10);
+        $files = File::getSharedByMe()->paginate(10);
 
         $files = FileResource::collection($files);
 
@@ -400,5 +367,63 @@ class FileController extends Controller
         }
 
         return Inertia::render('Files/SharedWithMe', compact('files'));
+    }
+
+    public function downloadSharedWithMe(FileActionRequest $request)
+    {
+        $data = $request->validated();
+
+        $all = $data['all'] ?? false;
+        $ids = $data['ids'] ?? [];
+
+        if (!$all && empty($ids)) {
+            return [
+                'message' => 'Please select files to download'
+            ];
+        }
+
+        $zipName = 'shared_with_me';
+        if ($all) {
+            $files = File::getSharedWithMe()->get();
+            $url = $this->createZip($files);
+            $fileName = $zipName . '.zip';
+        } else {
+            [$url, $fileName] = $this->getDownloadUrl($ids, $zipName);
+        }
+
+        return [
+            'url' => $url,
+            'fileName' => $fileName
+        ];
+    }
+
+    private function getDownloadUrl(array $ids, $zipName)
+    {
+        if (count($ids) === 1) {
+            $file = File::find($ids[0]);
+            if ($file->is_folder) {
+                if ($file->children->count() === 0) {
+                    return [
+                        'message' => 'The folder is empty.',
+                    ];
+                }
+                // dd($file);
+                $url = $this->createZip($file->children);
+                $fileName = $file->name . '.zip';
+            } else {
+                $destination = 'public/' . pathinfo($file->storage_path, PATHINFO_BASENAME);
+                Storage::copy($file->storage_path, $destination);
+
+                $url = asset(Storage::url($destination));
+                $fileName = $file->name;
+            }
+        } else {
+            $files = File::query()->whereIn('id', $ids)->get();
+            $url = $this->createZip($files);
+
+            $fileName = $zipName . '.zip';
+        }
+
+        return [$url, $fileName];
     }
 }

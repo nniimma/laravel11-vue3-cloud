@@ -33,12 +33,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/files', [FileController::class, 'destroy'])->name('files.destroy');
     Route::delete('/files/delete', [FileController::class, 'destroyPermanently'])->name('files.destroyPermanently');
     Route::put('/files', [FileController::class, 'restore'])->name('files.restore');
-    Route::get('/file/download', [FileController::class, 'download'])->name('files.download');
     Route::get('/trash', [FileController::class, 'trash'])->name('trash');
     Route::post('/favorites', [FileController::class, 'addToFavorites'])->name('files.favorites');
     Route::post('/files/share', [FileController::class, 'share'])->name('files.share');
     Route::get('/shared-with-me', [FileController::class, 'sharedWithMe'])->name('files.sharedWithMe');
     Route::get('/shared-by-me', [FileController::class, 'sharedByMe'])->name('files.sharedByMe');
+    Route::get('/file/download', [FileController::class, 'download'])->name('files.download');
+    Route::get('/file/download-shared-with-me', [FileController::class, 'downloadSharedWithMe'])->name('files.downloadSharedWithMe');
 });
 
 require __DIR__ . '/auth.php';
