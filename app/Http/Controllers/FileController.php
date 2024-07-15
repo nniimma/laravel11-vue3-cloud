@@ -399,6 +399,6 @@ class FileController extends Controller
             return $files;
         }
 
-        return Inertia::render('Files/SharedByMe', compact('files'));
+        return Inertia::render('Files/SharedWithMe', compact('files'));
     }
 }
