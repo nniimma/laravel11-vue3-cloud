@@ -223,12 +223,19 @@ class FileController extends Controller
 
     public function trash(Request $request)
     {
-        $files = File::onlyTrashed()
+        $search = $request->get('search');
+
+        $query = File::onlyTrashed()
             ->where('created_by', Auth::id())
             ->orderBy('is_folder', 'DESC')
             ->orderBy('deleted_at', 'DESC')
-            ->orderBy('id', 'DESC')
-            ->paginate(10);
+            ->orderBy('id', 'DESC');
+
+        if ($search) {
+            $query->where('name', 'like', "%$search%");
+        }
+
+        $files = $query->paginate(10);
 
         $files = FileResource::collection($files);
 
@@ -353,7 +360,15 @@ class FileController extends Controller
 
     public function sharedWithMe(Request $request)
     {
-        $files = File::getSharedWithMe()->paginate(10);
+        $search = $request->get('search');
+
+        $query = File::getSharedWithMe();
+
+        if ($search) {
+            $query->where('name', 'like', "%$search%");
+        }
+
+        $files = $query->paginate(10);
 
         $files = FileResource::collection($files);
 
@@ -366,7 +381,15 @@ class FileController extends Controller
 
     public function sharedByMe(Request $request)
     {
-        $files = File::getSharedByMe()->paginate(10);
+        $search = $request->get('search');
+
+        $query = File::getSharedByMe();
+
+        if ($search) {
+            $query->where('name', 'like', "%$search%");
+        }
+
+        $files = $query->paginate(10);
 
         $files = FileResource::collection($files);
 
