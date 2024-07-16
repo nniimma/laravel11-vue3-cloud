@@ -8,10 +8,10 @@
             <create-new-drop-down/>
 
             <div class="py-3">
-                <nav-link :href="route('files.index')" :active="$page.url == '/files'">My Files</nav-link>
-                <NavLink :href="route('files.sharedWithMe')" :active="$page.url == '/shared-with-me'">Shared with me</NavLink>
-                <NavLink :href="route('files.sharedByMe')" :active="$page.url == '/shared-by-me'">Shared by me</NavLink>
-                <nav-link :href="route('trash')" :active="$page.url == '/trash'">Trash</nav-link>
+                <nav-link :href="route('files.index')" :active="$page.props.route_name == 'files.index'">My Files</nav-link>
+                <NavLink :href="route('files.sharedWithMe')" :active="$page.props.route_name == 'files.sharedWithMe'">Shared with me</NavLink>
+                <NavLink :href="route('files.sharedByMe')" :active="$page.props.route_name == 'files.sharedByMe'">Shared by me</NavLink>
+                <nav-link :href="route('trash')" :active="$page.props.route_name == 'trash'">Trash</nav-link>
             </div>
          </div>
     </nav>
