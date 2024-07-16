@@ -366,7 +366,7 @@ class FileController extends Controller
             return $files;
         }
 
-        return Inertia::render('Files/SharedWithMe', compact('files'));
+        return Inertia::render('Files/SharedByMe', compact('files'));
     }
 
     public function downloadSharedWithMe(FileActionRequest $request)
@@ -397,6 +397,34 @@ class FileController extends Controller
         ];
     }
 
+    public function downloadSharedByMe(FileActionRequest $request)
+    {
+        $data = $request->validated();
+
+        $all = $data['all'] ?? false;
+        $ids = $data['ids'] ?? [];
+
+        if (!$all && empty($ids)) {
+            return [
+                'message' => 'Please select files to download'
+            ];
+        }
+
+        $zipName = 'shared_by_me';
+        if ($all) {
+            $files = File::getSharedByMe()->get();
+            $url = $this->createZip($files);
+            $fileName = $zipName . '.zip';
+        } else {
+            [$url, $fileName] = $this->getDownloadUrl($ids, $zipName);
+        }
+
+        return [
+            'url' => $url,
+            'fileName' => $fileName
+        ];
+    }
+
     private function getDownloadUrl(array $ids, $zipName)
     {
         if (count($ids) === 1) {
@@ -407,7 +435,6 @@ class FileController extends Controller
                         'message' => 'The folder is empty.',
                     ];
                 }
-                // dd($file);
                 $url = $this->createZip($file->children);
                 $fileName = $file->name . '.zip';
             } else {

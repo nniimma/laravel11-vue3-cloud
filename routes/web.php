@@ -40,6 +40,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/shared-by-me', [FileController::class, 'sharedByMe'])->name('files.sharedByMe');
     Route::get('/file/download', [FileController::class, 'download'])->name('files.download');
     Route::get('/file/download-shared-with-me', [FileController::class, 'downloadSharedWithMe'])->name('files.downloadSharedWithMe');
+    Route::get('/file/download-shared-with-me', [FileController::class, 'downloadSharedByMe'])->name('files.downloadSharedByMe');
 });
 
 require __DIR__ . '/auth.php';
