@@ -41,6 +41,7 @@
                         <th class="text-sm font-medium text-gray-900 px-6 py-4 text-left w-[30px] max-w-[30px]">
                         </th>
                         <th class="text-sm font-medium text-gray-900 px-6 py-4 text-left">Name</th>
+                        <th v-if="search" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">Path</th>
                         <th class="text-sm font-medium text-gray-900 px-6 py-4 text-left">Owner</th>
                         <th class="text-sm font-medium text-gray-900 px-6 py-4 text-left">Last Modified</th>
                         <th class="text-sm font-medium text-gray-900 px-6 py-4 text-left">Size</th>
@@ -66,6 +67,9 @@
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 flex gap-2">
                             <file-icon :file="file" />
                             {{ file . name }}
+                        </td>
+                        <td v-if="search" class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900  gap-2">
+                            {{ file.path }}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ file . owner }}
                         </td>
@@ -119,6 +123,8 @@
         httpPost
     } from '@/Helper/Http-helper';
     import {
+        emitter,
+        ON_SEARCH,
         showErrorNotification,
         showSuccessNotification
     } from '@/event-bus';
@@ -142,6 +148,7 @@
         data: props.files.data,
         next: props.files.links.next
     })
+    const search = ref('')
     let params = null
 
 
@@ -237,6 +244,10 @@
     onMounted(() => {
         params = new URLSearchParams(window.location.search)
         onlyFavorites.value = params.get('favorites') === '1'
+        search.value = params.get('search')
+        emitter.on(ON_SEARCH, (value) => {
+            search.value = value
+        })
 
         const observer = new IntersectionObserver((entries) => entries.forEach(entry => entry.isIntersecting &&
             loadMore()), {

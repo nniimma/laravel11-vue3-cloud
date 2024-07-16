@@ -8,14 +8,18 @@
 <script setup>
     // Imports
     import TextInput from '@/Components/TextInput.vue';
+import { emitter, ON_SEARCH } from '@/event-bus';
     import {
         router,
         useForm
     } from '@inertiajs/vue3';
     import {
+        onMounted,
         ref
     } from 'vue';
+
     // Uses
+    let params = ''
 
     // Refs
     const search = ref('')
@@ -26,12 +30,18 @@
 
     // Methods
     function onSearch() {
-        const params = new URLSearchParams(window.location.search)
         params.set('search', search.value)
         router.get(window.location.pathname + '?' + params.toString())
+
+        emitter.emit(ON_SEARCH, search.value)
     }
 
     // Hooks
+    onMounted(() => {
+        params = new URLSearchParams(window.location.search)
+        search.value = params.get('search')
+    })
+
 </script>
 
 <style scoped>
